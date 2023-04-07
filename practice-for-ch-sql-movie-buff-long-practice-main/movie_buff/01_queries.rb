@@ -24,9 +24,9 @@ def harrison_ford
   # as a lead actor.
 
   Actor
-    .select(:id, :title)
+    .select('movies.id', :title)
     .joins(:movies)
-    .where("actors.name = ?", "Harrison Ford")
+    .where("actors.name = ? AND castings.ord > 1", "Harrison Ford")
 
 end
 
@@ -67,11 +67,16 @@ def directed_by_one_of(them)
   # Find the id and title of all the movies directed by one of 'them'.
   
   # Note: Directors appear in the 'actors' table.
+
   Actor
   .select("movies.id", :title)
-  .joins(:movies)
-  .where(name: them)
+  .joins(:directed_movies)
+  .where('name IN (?)', them)
 
+  # Movie
+  # .select(:id, :title)
+  # .joins(:director)
+  # .where('actors.name IN (?)', them)
 end
 
 def movie_names_before_1940
@@ -85,5 +90,10 @@ def movie_names_before_1940
   # improve performance for larger queries.
   #
   # Use pluck to find the title of all movies made before 1940.
+
+  Movie
+    .select(:title)
+    .where('yr < 1940')
+    .pluck(:title)
 
 end
